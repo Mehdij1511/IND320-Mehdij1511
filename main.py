@@ -23,7 +23,7 @@ st.markdown("""
 
 # Header with logo and title (1 part for the logo, 2 parts for the title)
 logo, title = st.columns([1, 2])
-logo.image("logo.jpg", width=100)
+logo.image("Logo.jpg", width=100)
 title.title("IND320 Portfolio APP")
 st.divider()
 
