@@ -1,77 +1,82 @@
+#import libraries
+from pathlib import Path
+import runpy
 import streamlit as st
 
-# Page Config
+#determine root path of the project
+PROJECT_ROOT = Path(__file__).parent
+
+#Configure the Streamlit app
 st.set_page_config(
     page_title="IND320 Portfolio APP",
     page_icon=":chart_with_upwards_trend:",
-    layout="wide"
+    layout="wide",
 )
 
-# Custom CSS for styling, coloring in regards to NMBU design guidelines, and some padding for the main content area.
-st.markdown("""
-<style>
-.stApp { background: #DBF8F4; }
-.block-container { padding: 3rem 2rem; }
-.stApp h1 { color: #025C4F; font-size: 2.4rem; margin: 1rem 0 2rem;}
-[data-testid="stSidebar"] { background: #008571;}
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] label {color: #DBF8F4;}
-</style>
-""", unsafe_allow_html=True)
+#Apply custom CSS styles to the app
+st.markdown(
+    """
+    <style>
+    .stApp { background: #DBF8F4; }
+    .block-container { padding: 3rem 2rem; }
+    .stApp h1 { color: #025C4F; font-size: 3rem; }
+    [data-testid="stSidebar"] { background: #008571; }
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] label { color: #DBF8F4; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-
-# Header with logo and title (1 part for the logo, 2 parts for the title)
+#Add a logo and title to the app
 logo, title = st.columns([1, 2])
-logo.image("Logo.jpg", width=100)
+logo.image(PROJECT_ROOT / "NMBU_Logo.png", width=300)
 title.title("IND320 Portfolio APP")
 st.divider()
 
-#Sidebar with navigation:
-st.sidebar.title("Navigation")
-st.sidebar.write("Select a task to navigate to its content.")
-
-#Main navigation
-selected_task = st.sidebar.selectbox(
-    label="Select a task",
-    options=[
-        "Part 1",
-        "Part 2",
-        "Part 3",
-        "Part 4"
-    ],
-    index=0
-)
-st.sidebar.write(f"You selected: {selected_task}")
-st.sidebar.divider()
-
-# Secondary navigation based on the selected task.
+#Define the subtasks and their corresponding pages for each part of the project
 subtasks_by_part = {
-    "Part 1": ["1. Home", "1.2", "1.3"],
-    "Part 2": ["2.1", "2.2", "2.3"],
-    "Part 3": ["3.1", "3.2", "3.3"],
-    "Part 4": ["4.1", "4.2", "4.3"],
-}
-
-selected_subtask = st.sidebar.selectbox(
-    label=f"Select a subtask for {selected_task}",
-    options=subtasks_by_part[selected_task],
-    index=0,
-)
-st.sidebar.write(f"You selected: {selected_subtask}")
-st.sidebar.divider()
-
-# Page routing: convert the selected label to the existing renderer name.
-renderer_name_by_subtask = {
-    "1. Home": "render_home_page",
-    # Copilot made this idea with the ** unpacking operator to generate the rest of the mapping dynamically.
-    **{
-        f"{part}.{number}": f"render_subtask_{part}_{number}"
-        for part in range(1, 5)
-        for number in range(1, 4)
-        if not (part == 1 and number == 1)
+    "Part 1": {
+        "Home": "ProjectPart1/Pages/Home.py",
+        "Data table": "ProjectPart1/Pages/Data_table.py",
+        "Interactive plotting": "ProjectPart1/Pages/Interactive_plotting.py",
+        "Page four": "ProjectPart1/Pages/Page_four.py",
+    },
+    "Part 2": {
+        "Home": "ProjectPart2/Pages/Home.py",
+        "2.1": "ProjectPart2/Pages/2_1.py",
+        "2.2": "ProjectPart2/Pages/2_2.py",
+        "2.3": "ProjectPart2/Pages/2_3.py",
+    },
+    "Part 3": {
+        "Home": "ProjectPart3/Pages/Home.py",
+        "3.1": "ProjectPart3/Pages/3_1.py",
+        "3.2": "ProjectPart3/Pages/3_2.py",
+        "3.3": "ProjectPart3/Pages/3_3.py",
+    },
+    "Part 4": {
+        "Home": "ProjectPart4/Pages/Home.py",
+        "4.1": "ProjectPart4/Pages/4_1.py",
+        "4.2": "ProjectPart4/Pages/4_2.py",
+        "4.3": "ProjectPart4/Pages/4_3.py",
     },
 }
-renderer = globals().get(renderer_name_by_subtask[selected_subtask])
-if renderer:
-    renderer()
+
+#Add a sidebar for navigation between parts and pages
+st.sidebar.title("Navigation")
+st.sidebar.write("Select a task to navigate to its content.")
+selected_part = st.sidebar.selectbox("Select a part", list(subtasks_by_part))
+selected_page = st.sidebar.selectbox(
+    f"Select a page for {selected_part}",
+    list(subtasks_by_part[selected_part]),
+)
+st.sidebar.write(f"You selected: {selected_part} - {selected_page}")
+st.sidebar.divider()
+
+#Run the selected page if it exists, otherwise display an info message
+page_path = PROJECT_ROOT / subtasks_by_part[selected_part][selected_page]
+if page_path.exists():
+    runpy.run_path(str(page_path), run_name="__main__")
+else:
+    st.info(f"Create the page file here: {page_path.relative_to(PROJECT_ROOT)}")
