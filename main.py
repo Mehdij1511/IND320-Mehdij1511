@@ -17,7 +17,8 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .stApp { background: #DBF8F4; }
+    .main-text { color: #000000; font-size: 1.5rem; }
+    .stApp { background: #DBF8F4; color: #000000; }
     .block-container { padding: 3rem 2rem; }
     .stApp h1 { color: #025C4F; font-size: 3rem; }
     [data-testid="stSidebar"] { background: #008571; }
@@ -41,7 +42,7 @@ subtasks_by_part = {
         "Home": "ProjectPart1/Pages/Home.py",
         "Data table": "ProjectPart1/Pages/Data_table.py",
         "Interactive plotting": "ProjectPart1/Pages/Interactive_plotting.py",
-        "Page four": "ProjectPart1/Pages/Page_four.py",
+        "Reservoir snapshot": "ProjectPart1/Pages/Page_four.py",
     },
     "Part 2": {
         "Home": "ProjectPart2/Pages/Home.py",

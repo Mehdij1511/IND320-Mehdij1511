@@ -33,23 +33,46 @@ measure_options = {
 	"Filled amount (TWh)": "fylling_TWh",
 	"Change from previous week (%)": "endring_fyllingsgrad_prosent",
 }
-selected_measure = st.selectbox("Measure", list(measure_options))
+selected_measure = st.selectbox(
+	"Measure",
+	["All measurements", *measure_options],
+)
 
 filtered_data = data[
 	(data["omrnr"] == selected_area) & (data["iso_aar"] == selected_year)
 ].sort_values("dato_Id")
 
-figure = px.line(
-	filtered_data,
-	x="dato_Id",
-	y=measure_options[selected_measure],
-	markers=True,
-	labels={
-		"dato_Id": "Date",
-		measure_options[selected_measure]: selected_measure,
-	},
-	title=f"{selected_measure} - Area {selected_area}, {selected_year}",
+month_options = sorted(filtered_data["dato_Id"].dt.to_period("M").astype(str).unique())
+selected_month = st.select_slider(
+	"Month",
+	options=month_options,
+	value=month_options[0],
 )
+filtered_data = filtered_data[
+	filtered_data["dato_Id"].dt.to_period("M").astype(str) == selected_month
+]
+
+if selected_measure == "All measurements":
+	figure = px.line(
+		filtered_data,
+		x="dato_Id",
+		y=list(measure_options.values()),
+		markers=True,
+		labels={"dato_Id": "Date", "value": "Measurement"},
+		title=f"All measurements - Area {selected_area}, {selected_year}, {selected_month}",
+	)
+else:
+	figure = px.line(
+		filtered_data,
+		x="dato_Id",
+		y=measure_options[selected_measure],
+		markers=True,
+		labels={
+			"dato_Id": "Date",
+			measure_options[selected_measure]: selected_measure,
+		},
+		title=f"{selected_measure} - Area {selected_area}, {selected_year}, {selected_month}",
+	)
 figure.update_layout(
 	height=600,
 	hovermode="x unified",
