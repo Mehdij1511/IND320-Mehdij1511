@@ -1,0 +1,422 @@
+[
+  {
+    "connection": "DK1-NO2",
+    "year": 2025,
+    "month": 1,
+    "direction": "Into Norway",
+    "total_energy_mwh": 762042.7499999998
+  },
+  {
+    "connection": "DK1-NO2",
+    "year": 2025,
+    "month": 1,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 91769.72499999998
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2024,
+    "month": 10,
+    "direction": "Into Norway",
+    "total_energy_mwh": 5472.21
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2024,
+    "month": 10,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 136564.91000000003
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2024,
+    "month": 11,
+    "direction": "Into Norway",
+    "total_energy_mwh": 70336.18999999999
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2024,
+    "month": 11,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 142745.05250000008
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2024,
+    "month": 12,
+    "direction": "Into Norway",
+    "total_energy_mwh": 83071.08999999997
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2024,
+    "month": 12,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 196989.48250000022
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2025,
+    "month": 1,
+    "direction": "Into Norway",
+    "total_energy_mwh": 111120.28999999996
+  },
+  {
+    "connection": "SE2-NO3",
+    "year": 2025,
+    "month": 1,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 107346.28500000016
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2024,
+    "month": 10,
+    "direction": "Into Norway",
+    "total_energy_mwh": 8055.644999999999
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2024,
+    "month": 10,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 65155.10749999999
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2024,
+    "month": 11,
+    "direction": "Into Norway",
+    "total_energy_mwh": 101737.70750000002
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2024,
+    "month": 11,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 85951.13
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2024,
+    "month": 12,
+    "direction": "Into Norway",
+    "total_energy_mwh": 98108.68499999991
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2024,
+    "month": 12,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 123478.475
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 1,
+    "direction": "Into Norway",
+    "total_energy_mwh": 80874.25749999995
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 1,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 69627.935
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 2,
+    "direction": "Into Norway",
+    "total_energy_mwh": 68793.52500000002
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 2,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 25988.502499999995
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 3,
+    "direction": "Into Norway",
+    "total_energy_mwh": 41769.135
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 3,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 55790.390000000014
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 4,
+    "direction": "Into Norway",
+    "total_energy_mwh": 27353.38500000001
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 4,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 67825.32749999994
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 5,
+    "direction": "Into Norway",
+    "total_energy_mwh": 245549.77750000014
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 5,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 3843.3875
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 6,
+    "direction": "Into Norway",
+    "total_energy_mwh": 208440.16999999998
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 6,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 17845.527499999997
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 7,
+    "direction": "Into Norway",
+    "total_energy_mwh": 169507.62999999998
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 7,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 3798.235000000001
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 8,
+    "direction": "Into Norway",
+    "total_energy_mwh": 120609.44250000005
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 8,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 3049.2425000000003
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 9,
+    "direction": "Into Norway",
+    "total_energy_mwh": 89640.08249999992
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 9,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 23375.444374999995
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 10,
+    "direction": "Into Norway",
+    "total_energy_mwh": 71300.61964025005
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 10,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 72141.5582137501
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 11,
+    "direction": "Into Norway",
+    "total_energy_mwh": 109187.16172175018
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 11,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 52553.898226250014
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 12,
+    "direction": "Into Norway",
+    "total_energy_mwh": 59388.042011999976
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2025,
+    "month": 12,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 125417.77966225013
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 1,
+    "direction": "Into Norway",
+    "total_energy_mwh": 132390.7737917501
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 1,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 20318.22909124999
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 2,
+    "direction": "Into Norway",
+    "total_energy_mwh": 106152.24745475006
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 2,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 27316.303563749974
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 3,
+    "direction": "Into Norway",
+    "total_energy_mwh": 37369.96940549996
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 3,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 200861.16358824962
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 4,
+    "direction": "Into Norway",
+    "total_energy_mwh": 37749.732880999996
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 4,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 167577.16006574983
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 5,
+    "direction": "Into Norway",
+    "total_energy_mwh": 122541.91338249994
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 5,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 52409.950451000055
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 6,
+    "direction": "Into Norway",
+    "total_energy_mwh": 257867.38873849934
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 6,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 9411.124845999999
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 7,
+    "direction": "Into Norway",
+    "total_energy_mwh": 269765.3637252503
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 7,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 4751.093947500002
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 8,
+    "direction": "Into Norway",
+    "total_energy_mwh": 244840.0318912499
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 8,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 9568.329076499997
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 9,
+    "direction": "Into Norway",
+    "total_energy_mwh": 153240.17213449973
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 9,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 21289.905273499975
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 10,
+    "direction": "Into Norway",
+    "total_energy_mwh": 141421.48901075
+  },
+  {
+    "connection": "SE3-NO4",
+    "year": 2026,
+    "month": 10,
+    "direction": "Out of Norway",
+    "total_energy_mwh": 20766.376332000014
+  }
+]

@@ -1,17 +1,12 @@
-from pathlib import Path
-
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
-# Locate the dataset relative to this file so the app works from the project root.
-DATA_FILE = Path(__file__).parents[1] / "Data" / "reservoirs.csv"
+from nve_data import AREA_TYPE_LABELS, load_reservoir_data
 
 
-@st.cache_data
 def load_data():
-	"""Load the reservoir data and add percentage-based display columns."""
-	data = pd.read_csv(DATA_FILE, parse_dates=["dato_Id"])
+	"""Load reservoir data and add percentage-based display columns."""
+	data = load_reservoir_data().copy()
 
 	# Convert decimal values to percentages for easier interpretation.
 	data["fyllingsgrad_prosent"] = data["fyllingsgrad"] * 100
@@ -26,8 +21,16 @@ st.write("Explore changes in reservoir levels over time.")
 data = load_data()
 
 # Create selection widgets for the user to filter the data.
-area_options = sorted(data["omrnr"].unique())
-selected_area = st.selectbox("Reservoir area", area_options)
+area_type_options = sorted(data["omrType"].unique())
+selected_area_type = st.selectbox(
+	"Area type",
+	area_type_options,
+	format_func=lambda value: AREA_TYPE_LABELS.get(value, value),
+)
+area_options = sorted(
+	data.loc[data["omrType"] == selected_area_type, "omrnr"].unique()
+)
+selected_area = st.selectbox("Area number", area_options)
 
 year_options = sorted(data["iso_aar"].unique(), reverse=True)
 selected_year = st.selectbox("Year", year_options)
@@ -47,7 +50,9 @@ selected_measure = st.selectbox(
 
 # Filter the data based on the selected area and year.
 filtered_data = data[
-	(data["omrnr"] == selected_area) & (data["iso_aar"] == selected_year)
+	(data["omrType"] == selected_area_type)
+	& (data["omrnr"] == selected_area)
+	& (data["iso_aar"] == selected_year)
 ].sort_values("dato_Id")
 
 if filtered_data.empty:
@@ -81,7 +86,10 @@ if selected_measure == "All measurements":
 		y=list(measure_options.values()),
 		markers=True,
 		labels={"dato_Id": "Date", "value": "Measurement"},
-		title=f"All measurements - Area {selected_area}, {selected_year}",
+		title=(
+			f"All measurements - {AREA_TYPE_LABELS.get(selected_area_type, selected_area_type)} "
+			f"{selected_area}, {selected_year}"
+		),
 	)
 else:
 	# Otherwise, create a plot for the selected measurement.
@@ -94,7 +102,10 @@ else:
 			"dato_Id": "Date",
 			measure_options[selected_measure]: selected_measure,
 		},
-		title=f"{selected_measure} - Area {selected_area}, {selected_year}",
+		title=(
+			f"{selected_measure} - {AREA_TYPE_LABELS.get(selected_area_type, selected_area_type)} "
+			f"{selected_area}, {selected_year}"
+		),
 	)
 
 # Apply consistent formatting to make the chart easier to read.

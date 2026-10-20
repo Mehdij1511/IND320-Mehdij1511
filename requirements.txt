@@ -3,3 +3,9 @@ pandas
 numpy
 matplotlib
 plotly
+requests
+cassandra-driver
+pyasyncore
+pyspark
+pymongo
+nbformat

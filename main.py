@@ -36,31 +36,19 @@ logo.image(PROJECT_ROOT / "NMBU_Logo.png", width=300)
 title.title("IND320 Portfolio APP")
 st.divider()
 
-#Define the subtasks and their corresponding pages for each part of the project
+# Define the subtasks and their corresponding pages for each part of the project.
 subtasks_by_part = {
     "Part 1": {
-        "Home": "ProjectPart1/Pages/Home.py",
-        "Data table": "ProjectPart1/Pages/Data_table.py",
-        "Interactive plotting": "ProjectPart1/Pages/Interactive_plotting.py",
-        "Reservoir snapshot": "ProjectPart1/Pages/Page_four.py",
+        "Home": "Pages/Part1/1Home.py",
+        "Data table": "Pages/Part1/2Data_table.py",
+        "Interactive plotting": "Pages/Part1/3Interactive_plotting.py",
+        "Reservoir snapshot": "Pages/Part1/4Page_four.py",
     },
     "Part 2": {
-        "Home": "ProjectPart2/Pages/Home.py",
-        "2.1": "ProjectPart2/Pages/2_1.py",
-        "2.2": "ProjectPart2/Pages/2_2.py",
-        "2.3": "ProjectPart2/Pages/2_3.py",
-    },
-    "Part 3": {
-        "Home": "ProjectPart3/Pages/Home.py",
-        "3.1": "ProjectPart3/Pages/3_1.py",
-        "3.2": "ProjectPart3/Pages/3_2.py",
-        "3.3": "ProjectPart3/Pages/3_3.py",
-    },
-    "Part 4": {
-        "Home": "ProjectPart4/Pages/Home.py",
-        "4.1": "ProjectPart4/Pages/4_1.py",
-        "4.2": "ProjectPart4/Pages/4_2.py",
-        "4.3": "ProjectPart4/Pages/4_3.py",
+        "Home": "Pages/Part2/1Home.py",
+        "NVE API": "Pages/Part2/2NVE_API.py",
+        "ENTSO-E API": "Pages/Part2/3ENTSOE_API.py",
+        "MongoDB": "Pages/Part2/4MongoDB.py",
     },
 }
 

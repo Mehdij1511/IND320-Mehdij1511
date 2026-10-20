@@ -9,8 +9,9 @@ st.write(
 # Give the user some background information about the dataset.
 st.subheader("About the dataset")
 st.write(
-    "The data is stored in reservoirs.csv and contains weekly observations of reservoir areas, "
-    "filling levels, capacity, filled volume, and changes from the previous week."
+    "The data is fetched from the public NVE Magasinstatistikk API and contains weekly "
+    "observations of reservoir areas, filling levels, capacity, filled volume, and changes "
+    "from the previous week."
 )
 
 # Summarise the main features available through the navigation menu.

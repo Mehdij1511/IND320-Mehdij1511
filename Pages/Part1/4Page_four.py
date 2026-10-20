@@ -1,17 +1,12 @@
-from pathlib import Path
-
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
-# Locate the CSV file relative to this page so the app works from the project root.
-DATA_FILE = Path(__file__).parents[1] / "Data" / "reservoirs.csv"
+from nve_data import load_reservoir_data
 
 
-@st.cache_data
 def load_data():
-	"""Load the reservoir data and prepare the percentage values."""
-	data = pd.read_csv(DATA_FILE, parse_dates=["dato_Id"])
+	"""Load reservoir data and prepare the percentage values."""
+	data = load_reservoir_data().copy()
 
 	# Convert the filling level from a decimal value to a percentage.
 	data["fyllingsgrad_prosent"] = data["fyllingsgrad"] * 100
