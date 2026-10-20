@@ -5,7 +5,10 @@ from mongo_data import load_monthly_flows
 
 
 st.title("Part 2 - MongoDB")
-st.write("Explore the Spark-processed electricity-flow data stored in MongoDB.")
+st.write(
+	"Explore the monthly electricity-flow summaries prepared with Spark and "
+	"stored in MongoDB Atlas."
+)
 
 try:
 	data = load_monthly_flows()
@@ -95,9 +98,10 @@ with right:
 with st.expander("About the data"):
 	st.write(
 		"The source data was retrieved from the ENTSO-E Transparency Platform API. "
-		"Raw electricity-flow observations were stored in Cassandra. Spark added "
-		"year and month fields and aggregated the quantities by connection, period, "
-		"and direction. The processed records were then stored in MongoDB. "
+		"Raw electricity-flow observations were stored in Cassandra. Spark converted "
+		"the observations to MWh, added year and month fields, and aggregated the "
+		"quantities by connection, period, and direction. The processed records were "
+		"then stored in MongoDB Atlas for this Streamlit page. "
 		"SE3-NO4 contains the complete two-year dataset required for the project. "
 		"The other selected connections are included as verified comparison "
 		"connections, but could not be loaded completely for the full two-year "
