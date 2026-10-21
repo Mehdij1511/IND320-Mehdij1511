@@ -92,4 +92,22 @@ else:
 
 	# Keep the filtered source rows available for users who want the imported values.
 	st.subheader("Filtered imported data")
-	st.dataframe(filtered_data, hide_index=True, width="stretch")
+	# Use English headers in the app while keeping the original CSV names internally.
+	display_columns = {
+		"dato_Id": "Date",
+		"omrType": "Area type",
+		"omrnr": "Area number",
+		"iso_aar": "Year",
+		"iso_uke": "Week",
+		"fyllingsgrad": "Filling level",
+		"kapasitet_TWh": "Capacity (TWh)",
+		"fylling_TWh": "Filled volume (TWh)",
+		"neste_Publiseringsdato": "Next publication date",
+		"fyllingsgrad_forrige_uke": "Previous week filling",
+		"endring_fyllingsgrad": "Change from previous week",
+		"fyllingsgrad_prosent": "Filling level (%)",
+		"fyllingsgrad_forrige_uke_prosent": "Previous week filling (%)",
+		"endring_fyllingsgrad_prosent": "Change from previous week (%)",
+	}
+	display_data = filtered_data.rename(columns=display_columns)
+	st.dataframe(display_data, hide_index=True, width="stretch")
