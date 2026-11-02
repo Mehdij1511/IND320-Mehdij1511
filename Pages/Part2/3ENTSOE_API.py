@@ -15,6 +15,7 @@ from entsoe_data import (
 st.title("Part 2 - ENTSO-E API")
 st.write("Retrieve cross-border physical electricity flows involving Norway.")
 
+# These controls define the two bidding zones used in the API request.
 partner = st.selectbox(
 	"Partner connection",
 	sorted(PARTNER_DOMAINS),
@@ -33,6 +34,7 @@ if st.button("Load ENTSO-E data", type="primary"):
 		st.error("End date must be after start date.")
 		st.stop()
 
+	# Request both transfer directions so they can be compared in one chart.
 	start = datetime.combine(start_date, time.min, tzinfo=timezone.utc)
 	end = datetime.combine(end_date, time.min, tzinfo=timezone.utc)
 	frames = []

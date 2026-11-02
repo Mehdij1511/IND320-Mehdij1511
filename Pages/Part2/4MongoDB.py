@@ -29,31 +29,43 @@ if missing_columns:
 	st.stop()
 
 connections = sorted(data["connection"].unique())
-years = sorted(data["year"].unique())
 
 left, right = st.columns(2)
 
 with left:
 	st.subheader("Annual electricity transfer")
+	default_connection = "SE3-NO4" if "SE3-NO4" in connections else connections[0]
 	selected_connection = st.radio(
 		"Connection",
 		connections,
+		index=connections.index(default_connection),
 		horizontal=True,
 	)
-	selected_year = st.selectbox("Year", years)
+	available_years = sorted(
+		data.loc[data["connection"] == selected_connection, "year"].unique()
+	)
+	default_year = 2025 if 2025 in available_years else available_years[-1]
+	selected_year = st.selectbox(
+		"Year",
+		available_years,
+		index=available_years.index(default_year),
+	)
 
 	annual_data = data[
 		(data["connection"] == selected_connection)
 		& (data["year"] == selected_year)
 	]
-	annual_figure = px.pie(
-		annual_data,
-		names="direction",
-		values="total_energy_mwh",
-		title=f"{selected_connection} - {selected_year}",
-		hole=0.35,
-	)
-	st.plotly_chart(annual_figure, width="stretch")
+	if annual_data.empty:
+		st.info("No annual data is available for this selection.")
+	else:
+		annual_figure = px.pie(
+			annual_data,
+			names="direction",
+			values="total_energy_mwh",
+			title=f"{selected_connection} - {selected_year}",
+			hole=0.35,
+		)
+		st.plotly_chart(annual_figure, width="stretch")
 
 with right:
 	st.subheader("Monthly electricity transfer")
