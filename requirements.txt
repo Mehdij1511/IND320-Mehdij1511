@@ -9,3 +9,7 @@ pyasyncore
 pyspark
 pymongo
 nbformat
+geopandas
+scipy
+scikit-learn
+statsmodels

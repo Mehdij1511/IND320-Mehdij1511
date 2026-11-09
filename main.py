@@ -50,6 +50,11 @@ subtasks_by_part = {
         "ENTSO-E API": "Pages/Part2/3ENTSOE_API.py",
         "MongoDB": "Pages/Part2/4MongoDB.py",
     },
+    "Part 3": {
+        "Home": "Pages/Part3/3Home.py",
+        "Reservoir seasonality": "Pages/Part3/1Reservoir_Seasonality.py",
+        "Weather outliers": "Pages/Part3/2Weather_Outliers.py",
+    },
 }
 
 #Add a sidebar for navigation between parts and pages
