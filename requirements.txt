@@ -15,7 +15,7 @@ nbconvert
 geopandas
 shapely
 pyproj
-fiona
+pyogrio
 scipy
 scikit-learn
 statsmodels

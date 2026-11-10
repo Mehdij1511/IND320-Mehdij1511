@@ -35,6 +35,8 @@ OPEN_METEO_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 ERA5_GRID_DEGREES = 0.25
 # Open-Meteo accepts up to 100 coordinates in one multi-location request.
 OPEN_METEO_BATCH_SIZE = 100
+# Keep each multi-location request below the archive API's data-volume limit.
+OPEN_METEO_MAX_DAYS_PER_REQUEST = 14
 OPEN_METEO_REQUEST_INTERVAL = 110.0
 OPEN_METEO_HOURLY_CALL_BUDGET = 4500
 OPEN_METEO_DAILY_CALL_BUDGET = 9500
@@ -404,7 +406,7 @@ def _download_era5_locations(
     batch_size: int = OPEN_METEO_BATCH_SIZE,
     location_weights: list[int] | None = None,
 ) -> pd.DataFrame:
-    """Download yearly ERA5 batches and return their weighted hourly mean."""
+    """Download time-windowed ERA5 batches and return their weighted mean."""
     if not coordinates:
         raise ValueError("At least one coordinate pair is required.")
     if batch_size < 1:
@@ -444,7 +446,13 @@ def _download_era5_locations(
 
     while interval_start <= end:
         year_end = pd.Timestamp(year=interval_start.year, month=12, day=31)
-        interval_end = min(year_end, end)
+        interval_end = min(
+            year_end,
+            end,
+            interval_start + pd.Timedelta(
+                days=OPEN_METEO_MAX_DAYS_PER_REQUEST - 1
+            ),
+        )
         expected_times = pd.date_range(
             start=interval_start,
             end=interval_end + pd.Timedelta(days=1),
