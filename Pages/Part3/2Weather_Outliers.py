@@ -27,7 +27,7 @@ if not era5_mongodb_cache_configured():
         "are local to this app instance."
     )
 
-# Keep the historical API request behind explicit user confirmation.
+# Only contact the weather API after the user asks to load the data.
 if st.button(
     f"Download or load NO{area_number} weather data",
     type="primary",
@@ -35,8 +35,8 @@ if st.button(
 ):
     try:
         with st.spinner(
-            "Checking cached ERA5 batches and downloading any missing data. "
-            "This can take several minutes; completed batches are reused.",
+            "Checking the cache first and downloading anything that's missing. "
+            "This can take a few minutes; completed batches are reused.",
             show_time=True,
         ):
             weather_data = load_weather_for_area(area_number, year)
