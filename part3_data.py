@@ -266,11 +266,13 @@ def _request_era5_batch(payload: dict, cache_dir: Path) -> list[dict]:
             f" Retry-After: {retry_after}." if retry_after else ""
         )
         if "daily api request limit" in response_detail.lower():
+            _release_era5_call_budget(reservation)
             raise Era5ApiBudgetExceeded(
                 "Open-Meteo reported that its daily API limit has been reached. "
                 f"Completed batches are cached.{retry_message} Retry manually "
                 "after the limit resets."
             )
+        _release_era5_call_budget(reservation)
         detail_message = (
             f" Server response: {response_detail}" if response_detail else ""
         )
