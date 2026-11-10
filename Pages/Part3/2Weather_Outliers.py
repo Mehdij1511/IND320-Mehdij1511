@@ -47,6 +47,11 @@ if st.button(
         response = error.response
         status = response.status_code if response is not None else "unknown"
         st.error(f"Open-Meteo rejected the request (HTTP {status}). {error}")
+    except requests.Timeout:
+        st.warning(
+            "Open-Meteo did not respond within the time limit. The completed "
+            "batches remain cached; please retry later."
+        )
     else:
         st.session_state["part3_weather_data"] = weather_data
         st.session_state["part3_weather_selection"] = (area_number, year)

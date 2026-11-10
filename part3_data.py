@@ -33,6 +33,7 @@ REGION_IDENTIFIER_MAP = {
 }
 OPEN_METEO_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 ERA5_GRID_DEGREES = 0.25
+# Open-Meteo accepts up to 100 coordinates in one multi-location request.
 OPEN_METEO_BATCH_SIZE = 100
 OPEN_METEO_REQUEST_INTERVAL = 110.0
 OPEN_METEO_HOURLY_CALL_BUDGET = 4500
@@ -254,11 +255,15 @@ def _request_era5_batch(payload: dict, cache_dir: Path) -> list[dict]:
         return locations
 
     reservation = _reserve_era5_call_budget(payload)
-    response = requests.post(
-        OPEN_METEO_ARCHIVE_URL,
-        json=payload,
-        timeout=(15, 180),
-    )
+    try:
+        response = requests.post(
+            OPEN_METEO_ARCHIVE_URL,
+            json=payload,
+            timeout=(15, 180),
+        )
+    except requests.RequestException:
+        _release_era5_call_budget(reservation)
+        raise
     if response.status_code == 429:
         retry_after = response.headers.get("Retry-After")
         response_detail = response.text.strip()[:200]
