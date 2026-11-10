@@ -132,10 +132,10 @@ def sample_region_locations(
 def _reserve_era5_call_budget(payload: dict) -> tuple[str, int | str]:
     """Reserve a conservative API-call estimate for the next uncached batch."""
     location_count = len(payload["latitude"])
-    start = pd.Timestamp(payload["start_date"][0]).normalize()
-    end = pd.Timestamp(payload["end_date"][0]).normalize()
+    start = pd.Timestamp(payload["start_date"]).normalize()
+    end = pd.Timestamp(payload["end_date"]).normalize()
     days = (end - start).days + 1
-    variable_count = len(payload["hourly"][0].split(","))
+    variable_count = len(payload["hourly"].split(","))
     estimated_calls = (
         location_count
         * math.ceil(days / 14)
@@ -467,11 +467,11 @@ def _download_era5_locations(
             payload = {
                 "latitude": [latitude for longitude, latitude in batch],
                 "longitude": [longitude for longitude, latitude in batch],
-                "start_date": [interval_start.strftime("%Y-%m-%d")] * location_count,
-                "end_date": [interval_end.strftime("%Y-%m-%d")] * location_count,
-                "hourly": ["precipitation,temperature_2m"] * location_count,
-                "models": ["era5"] * location_count,
-                "timezone": ["UTC"] * location_count,
+                "start_date": interval_start.strftime("%Y-%m-%d"),
+                "end_date": interval_end.strftime("%Y-%m-%d"),
+                "hourly": "precipitation,temperature_2m",
+                "models": "era5",
+                "timezone": "UTC",
             }
             cache_key = hashlib.sha256(
                 json.dumps(payload, sort_keys=True).encode("utf-8")
