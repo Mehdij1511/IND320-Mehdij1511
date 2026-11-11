@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 
 from mongo_data import era5_mongodb_cache_configured
 from part3_analysis import plot_precipitation_outliers, plot_temperature_anomalies
@@ -42,6 +43,15 @@ if st.button(
             weather_data = load_weather_for_area(area_number, year)
     except Era5ApiBudgetExceeded as error:
         st.warning(str(error))
+    except requests.HTTPError as error:
+        response = error.response
+        status = response.status_code if response is not None else "unknown"
+        st.error(f"Open-Meteo rejected the request (HTTP {status}). {error}")
+    except requests.Timeout:
+        st.warning(
+            "Open-Meteo did not respond within the time limit. The completed "
+            "batches remain cached; please retry later."
+        )
     else:
         st.session_state["part3_weather_data"] = weather_data
         st.session_state["part3_weather_selection"] = (area_number, year)
