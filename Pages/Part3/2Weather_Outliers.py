@@ -13,8 +13,15 @@ st.write(
     "Magasinstatistikk electricity area."
 )
 
-_, area_number = select_electricity_area("part3_weather")
+_, area_number = select_electricity_area(
+    "part3_weather_cached_default",
+    default_area_number=3,
+)
 year = st.selectbox("Weather data year", options=[2024], key="part3_weather_year")
+st.caption(
+    "NO3 is selected by default because its complete 2024 weather series is "
+    "cached locally. Loading other areas may require additional API requests."
+)
 st.caption(
     "New requests use conservative rolling budgets of 4,500 calls per hour and "
     "9,500 calls per 24 hours, below Open-Meteo's published limits. "

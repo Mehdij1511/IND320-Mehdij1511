@@ -8,16 +8,25 @@ from nve_data import load_reservoir_data
 from part3_data import download_era5_data
 
 
-def select_electricity_area(key_prefix: str) -> tuple[pd.DataFrame, int]:
+def select_electricity_area(
+    key_prefix: str,
+    default_area_number: int | None = None,
+) -> tuple[pd.DataFrame, int]:
     data = load_reservoir_data()
     electricity_data = data.loc[data["omrType"] == "EL"]
     area_numbers = sorted(electricity_data["omrnr"].dropna().unique())
     if not area_numbers:
         raise ValueError("Magasinstatistikk contains no electricity areas.")
 
+    default_index = (
+        area_numbers.index(default_area_number)
+        if default_area_number in area_numbers
+        else 0
+    )
     area_number = st.selectbox(
         "Electricity area",
         options=area_numbers,
+        index=default_index,
         format_func=lambda value: f"NO{int(value)}",
         key=f"{key_prefix}_area",
     )

@@ -1,6 +1,5 @@
 import hashlib
 import json
-import math
 import sqlite3
 from collections import Counter
 from contextlib import closing
@@ -33,10 +32,10 @@ REGION_IDENTIFIER_MAP = {
 }
 OPEN_METEO_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 ERA5_GRID_DEGREES = 0.25
-# Open-Meteo accepts up to 100 coordinates in one multi-location request.
-OPEN_METEO_BATCH_SIZE = 100
-# Keep each multi-location request below the archive API's data-volume limit.
-OPEN_METEO_MAX_DAYS_PER_REQUEST = 14
+# The API allows up to 100 locations, but full-year hourly responses are
+# verified to work with five locations per request.
+OPEN_METEO_MAX_LOCATIONS_PER_REQUEST = 100
+OPEN_METEO_BATCH_SIZE = 5
 OPEN_METEO_REQUEST_INTERVAL = 110.0
 OPEN_METEO_HOURLY_CALL_BUDGET = 4500
 OPEN_METEO_DAILY_CALL_BUDGET = 9500
@@ -133,17 +132,10 @@ def sample_region_locations(
 
 
 def _reserve_era5_call_budget(payload: dict) -> tuple[str, int | str]:
-    """Reserve a conservative API-call estimate for the next uncached batch."""
+    """Reserve one estimated API call per requested location."""
     location_count = len(payload["latitude"])
-    start = pd.Timestamp(payload["start_date"][0]).normalize()
-    end = pd.Timestamp(payload["end_date"][0]).normalize()
-    days = (end - start).days + 1
     variable_count = len(payload["hourly"])
-    estimated_calls = (
-        location_count
-        * math.ceil(days / OPEN_METEO_MAX_DAYS_PER_REQUEST)
-        * max(1, variable_count / 10)
-    )
+    estimated_calls = location_count * max(1, variable_count / 10)
 
     shared_reservation = reserve_era5_api_budget(
         estimated_calls,
@@ -406,12 +398,13 @@ def _download_era5_locations(
     batch_size: int = OPEN_METEO_BATCH_SIZE,
     location_weights: list[int] | None = None,
 ) -> pd.DataFrame:
-    """Download ERA5 time slices and return their weighted hourly mean."""
+    """Download the full ERA5 period in multi-location batches and return its weighted mean."""
     if not coordinates:
         raise ValueError("At least one coordinate pair is required.")
-    if not 1 <= batch_size <= OPEN_METEO_BATCH_SIZE:
+    if not 1 <= batch_size <= OPEN_METEO_MAX_LOCATIONS_PER_REQUEST:
         raise ValueError(
-            f"batch_size must be between 1 and {OPEN_METEO_BATCH_SIZE}."
+            "batch_size must be between 1 and "
+            f"{OPEN_METEO_MAX_LOCATIONS_PER_REQUEST}."
         )
     if location_weights is None:
         location_weights = [1] * len(coordinates)
@@ -443,151 +436,70 @@ def _download_era5_locations(
         raise ValueError("Coordinate pairs must contain valid longitude and latitude.")
 
     last_request_started = None
-    interval_results = []
-    interval_start = start
+    expected_times = pd.date_range(
+        start=start,
+        end=end + pd.Timedelta(days=1),
+        freq="h",
+        inclusive="left",
+        tz="UTC",
+    )
+    unique_coordinates = {}
+    for coordinate in coordinates:
+        unique_coordinates.setdefault(_coordinate_key(*coordinate), coordinate)
+    location_data = _load_cached_era5_locations(
+        cache_dir,
+        list(unique_coordinates.values()),
+        expected_times,
+    )
+    missing_coordinates = [
+        coordinate
+        for key, coordinate in unique_coordinates.items()
+        if key not in location_data
+    ]
 
-    while interval_start <= end:
-        year_end = pd.Timestamp(year=interval_start.year, month=12, day=31)
-        interval_end = min(
-            year_end,
-            end,
-            interval_start + pd.Timedelta(
-                days=OPEN_METEO_MAX_DAYS_PER_REQUEST - 1
-            ),
-        )
-        expected_times = pd.date_range(
-            start=interval_start,
-            end=interval_end + pd.Timedelta(days=1),
-            freq="h",
-            inclusive="left",
-            tz="UTC",
-        )
-        location_data = _load_cached_era5_locations(
-            cache_dir,
-            coordinates,
-            expected_times,
-        )
-        unique_coordinates = {}
-        for coordinate in coordinates:
-            unique_coordinates.setdefault(_coordinate_key(*coordinate), coordinate)
-        missing_coordinates = [
-            coordinate
-            for key, coordinate in unique_coordinates.items()
-            if key not in location_data
-        ]
-
-        partial_location_data = {}
-        chunk_start = interval_start
-        while chunk_start <= interval_end:
-            chunk_end = min(
-                chunk_start + pd.Timedelta(
-                    days=OPEN_METEO_MAX_DAYS_PER_REQUEST - 1
-                ),
-                interval_end,
+    for offset in range(0, len(missing_coordinates), batch_size):
+        batch = missing_coordinates[offset : offset + batch_size]
+        location_count = len(batch)
+        batch_data = {}
+        payload = {
+            "latitude": [latitude for longitude, latitude in batch],
+            "longitude": [longitude for longitude, latitude in batch],
+            "start_date": [start.strftime("%Y-%m-%d")] * location_count,
+            "end_date": [end.strftime("%Y-%m-%d")] * location_count,
+            "hourly": ["precipitation", "temperature_2m"],
+            "models": ["era5"] * location_count,
+            "timezone": ["UTC"] * location_count,
+        }
+        cache_key = hashlib.sha256(
+            json.dumps(payload, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+        cached = (cache_dir / f"{cache_key}.json").is_file()
+        if not cached and last_request_started is not None:
+            wait = OPEN_METEO_REQUEST_INTERVAL - (
+                monotonic() - last_request_started
             )
-            chunk_times = pd.date_range(
-                start=chunk_start,
-                end=chunk_end + pd.Timedelta(days=1),
-                freq="h",
-                inclusive="left",
-                tz="UTC",
+            if wait > 0:
+                sleep(wait)
+
+        if not cached:
+            last_request_started = monotonic()
+        locations = _request_era5_batch(payload, cache_dir)
+        if len(locations) != location_count:
+            raise ValueError(
+                "Open-Meteo returned a different number of locations "
+                f"({len(locations)}) than requested ({location_count})."
             )
-            for offset in range(0, len(missing_coordinates), batch_size):
-                batch = missing_coordinates[offset : offset + batch_size]
-                location_count = len(batch)
-                payload = {
-                    "latitude": [latitude for longitude, latitude in batch],
-                    "longitude": [longitude for longitude, latitude in batch],
-                    "start_date": [chunk_start.strftime("%Y-%m-%d")] * location_count,
-                    "end_date": [chunk_end.strftime("%Y-%m-%d")] * location_count,
-                    "hourly": ["precipitation", "temperature_2m"],
-                    "models": ["era5"] * location_count,
-                    "timezone": ["UTC"] * location_count,
-                }
-                cache_key = hashlib.sha256(
-                    json.dumps(payload, sort_keys=True).encode("utf-8")
-                ).hexdigest()
-                cached = (cache_dir / f"{cache_key}.json").is_file()
-                if not cached and last_request_started is not None:
-                    wait = OPEN_METEO_REQUEST_INTERVAL - (
-                        monotonic() - last_request_started
-                    )
-                    if wait > 0:
-                        sleep(wait)
 
-                if not cached:
-                    last_request_started = monotonic()
-                locations = _request_era5_batch(payload, cache_dir)
-                if len(locations) != location_count:
-                    raise ValueError(
-                        "Open-Meteo returned a different number of locations "
-                        f"({len(locations)}) than requested ({location_count})."
-                    )
+        batch_times = None
+        for location, coordinate in zip(locations, batch):
+            hourly = location.get("hourly")
+            if not isinstance(hourly, dict) or "time" not in hourly:
+                raise ValueError("Open-Meteo response is missing hourly time data.")
+            if batch_times is None:
+                batch_times = hourly["time"]
+            elif hourly["time"] != batch_times:
+                raise ValueError("Open-Meteo returned mismatched hourly timestamps.")
 
-                batch_times = None
-                for location, coordinate in zip(locations, batch):
-                    hourly = location.get("hourly")
-                    if not isinstance(hourly, dict) or "time" not in hourly:
-                        raise ValueError(
-                            "Open-Meteo response is missing hourly time data."
-                        )
-                    if batch_times is None:
-                        batch_times = hourly["time"]
-                    elif hourly["time"] != batch_times:
-                        raise ValueError(
-                            "Open-Meteo returned mismatched hourly timestamps."
-                        )
-
-                    precipitation_key = (
-                        "precipitation_era5"
-                        if "precipitation_era5" in hourly
-                        else "precipitation"
-                    )
-                    temperature_key = (
-                        "temperature_2m_era5"
-                        if "temperature_2m_era5" in hourly
-                        else "temperature_2m"
-                    )
-                    if precipitation_key not in hourly or temperature_key not in hourly:
-                        raise ValueError(
-                            "Open-Meteo response is missing ERA5 precipitation or temperature."
-                        )
-                    returned_times = pd.DatetimeIndex(
-                        pd.to_datetime(hourly["time"], utc=True, errors="raise")
-                    )
-                    if not returned_times.equals(chunk_times):
-                        raise ValueError(
-                            "Open-Meteo did not return every expected hourly timestamp "
-                            "for the requested interval."
-                        )
-                    if len(hourly[precipitation_key]) != len(chunk_times) or len(
-                        hourly[temperature_key]
-                    ) != len(chunk_times):
-                        raise ValueError(
-                            "Open-Meteo returned an incomplete hourly time series."
-                        )
-
-                    partial = partial_location_data.setdefault(
-                        _coordinate_key(*coordinate),
-                        {
-                            "time": [],
-                            "precipitation": [],
-                            "temperature_2m": [],
-                        },
-                    )
-                    partial["time"].extend(hourly["time"])
-                    partial["precipitation"].extend(hourly[precipitation_key])
-                    partial["temperature_2m"].extend(hourly[temperature_key])
-            chunk_start = chunk_end + pd.Timedelta(days=1)
-
-        for key, hourly in partial_location_data.items():
-            location_data[key] = {"hourly": hourly}
-
-        precipitation_values = []
-        temperature_values = []
-        for coordinate in coordinates:
-            location = location_data[_coordinate_key(*coordinate)]
-            hourly = location["hourly"]
             precipitation_key = (
                 "precipitation_era5"
                 if "precipitation_era5" in hourly
@@ -598,46 +510,91 @@ def _download_era5_locations(
                 if "temperature_2m_era5" in hourly
                 else "temperature_2m"
             )
-            precipitation_values.append(hourly[precipitation_key])
-            temperature_values.append(hourly[temperature_key])
-
-        precipitation_array = np.asarray(precipitation_values, dtype=float)
-        temperature_array = np.asarray(temperature_values, dtype=float)
-        if (
-            precipitation_array.shape[1] != len(expected_times)
-            or temperature_array.shape[1] != len(expected_times)
-        ):
-            raise ValueError("Open-Meteo returned an incomplete hourly time series.")
-
-        batch_weights = np.asarray(location_weights, dtype=int)[:, np.newaxis]
-        interval_precipitation = np.nansum(
-            precipitation_array * batch_weights, axis=0
-        )
-        interval_temperature = np.nansum(
-            temperature_array * batch_weights, axis=0
-        )
-        precipitation_counts = (
-            np.isfinite(precipitation_array) * batch_weights
-        ).sum(axis=0)
-        temperature_counts = (
-            np.isfinite(temperature_array) * batch_weights
-        ).sum(axis=0)
-
-        if np.any(precipitation_counts == 0) or np.any(temperature_counts == 0):
-            raise ValueError("Open-Meteo returned no valid data for one or more hours.")
-
-        interval_results.append(
-            pd.DataFrame(
-                {
-                    "time": expected_times,
-                    "precipitation": interval_precipitation / precipitation_counts,
-                    "temperature_2m": interval_temperature / temperature_counts,
-                }
+            if precipitation_key not in hourly or temperature_key not in hourly:
+                raise ValueError(
+                    "Open-Meteo response is missing ERA5 precipitation or temperature."
+                )
+            returned_times = pd.DatetimeIndex(
+                pd.to_datetime(hourly["time"], utc=True, errors="raise")
             )
-        )
-        interval_start = interval_end + pd.Timedelta(days=1)
+            if not returned_times.equals(expected_times):
+                raise ValueError(
+                    "Open-Meteo did not return every expected hourly timestamp "
+                    "for the requested interval."
+                )
+            if len(hourly[precipitation_key]) != len(expected_times) or len(
+                hourly[temperature_key]
+            ) != len(expected_times):
+                raise ValueError(
+                    "Open-Meteo returned an incomplete hourly time series."
+                )
 
-    return pd.concat(interval_results, ignore_index=True)
+            key = _coordinate_key(*coordinate)
+            partial = batch_data.setdefault(
+                key,
+                {
+                    "time": hourly["time"],
+                },
+            )
+            if partial["time"] != hourly["time"]:
+                raise ValueError(
+                    "Open-Meteo returned mismatched hourly timestamps."
+                )
+            partial[precipitation_key] = hourly[precipitation_key]
+            partial[temperature_key] = hourly[temperature_key]
+
+        for key, hourly in batch_data.items():
+            location_data[key] = {"hourly": hourly}
+
+    precipitation_values = []
+    temperature_values = []
+    for coordinate in coordinates:
+        hourly = location_data[_coordinate_key(*coordinate)]["hourly"]
+        precipitation_key = (
+            "precipitation_era5"
+            if "precipitation_era5" in hourly
+            else "precipitation"
+        )
+        temperature_key = (
+            "temperature_2m_era5"
+            if "temperature_2m_era5" in hourly
+            else "temperature_2m"
+        )
+        precipitation_values.append(hourly[precipitation_key])
+        temperature_values.append(hourly[temperature_key])
+
+    precipitation_array = np.asarray(precipitation_values, dtype=float)
+    temperature_array = np.asarray(temperature_values, dtype=float)
+    if (
+        precipitation_array.shape[1] != len(expected_times)
+        or temperature_array.shape[1] != len(expected_times)
+    ):
+        raise ValueError("Open-Meteo returned an incomplete hourly time series.")
+
+    batch_weights = np.asarray(location_weights, dtype=int)[:, np.newaxis]
+    interval_precipitation = np.nansum(
+        precipitation_array * batch_weights, axis=0
+    )
+    interval_temperature = np.nansum(
+        temperature_array * batch_weights, axis=0
+    )
+    precipitation_counts = (
+        np.isfinite(precipitation_array) * batch_weights
+    ).sum(axis=0)
+    temperature_counts = (
+        np.isfinite(temperature_array) * batch_weights
+    ).sum(axis=0)
+
+    if np.any(precipitation_counts == 0) or np.any(temperature_counts == 0):
+        raise ValueError("Open-Meteo returned no valid data for one or more hours.")
+
+    return pd.DataFrame(
+        {
+            "time": expected_times,
+            "precipitation": interval_precipitation / precipitation_counts,
+            "temperature_2m": interval_temperature / temperature_counts,
+        }
+    )
 
 
 def download_era5_data(
