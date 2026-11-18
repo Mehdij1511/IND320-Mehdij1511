@@ -15,7 +15,14 @@ AREA_TYPE_LABELS = {
 }
 
 
-@st.cache_data(ttl=3600)
+def _cache_data(function):
+	"""Use Streamlit caching only when a Streamlit runtime is available."""
+	if st.runtime.exists():
+		return st.cache_data(ttl=3600)(function)
+	return function
+
+
+@_cache_data
 def load_reservoir_data() -> pd.DataFrame:
 	"""Fetch public reservoir observations from NVE."""
 	response = requests.get(NVE_DATA_URL, timeout=30)
