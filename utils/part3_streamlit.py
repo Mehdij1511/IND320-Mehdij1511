@@ -3,9 +3,9 @@ from datetime import date
 import pandas as pd
 import streamlit as st
 
-from mongo_data import load_era5_weather_cache, save_era5_weather_cache
-from nve_data import load_reservoir_data
-from part3_data import download_era5_data
+from utils.mongo_data import load_era5_weather_cache, save_era5_weather_cache
+from utils.nve_data import load_reservoir_data
+from utils.part3_data import download_era5_data
 
 
 def select_electricity_area(

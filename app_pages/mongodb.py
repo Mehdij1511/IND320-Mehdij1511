@@ -1,10 +1,10 @@
 import plotly.express as px
 import streamlit as st
 
-from mongo_data import load_monthly_flows
+from utils.mongo_data import load_monthly_flows
 
 
-st.title("Part 2 - MongoDB")
+st.title("MongoDB monthly flows")
 st.write(
 	"Explore the monthly electricity-flow summaries prepared with Spark and "
 	"stored in MongoDB Atlas."

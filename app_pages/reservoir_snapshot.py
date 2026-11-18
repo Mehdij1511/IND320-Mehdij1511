@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from nve_data import load_reservoir_data
+from utils.nve_data import load_reservoir_data
 
 
 def load_data():

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from cassandra_data import connect
+from utils.cassandra_data import connect
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
 	col,

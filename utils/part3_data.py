@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import requests
 from shapely.geometry import Point
-from mongo_data import (
+from utils.mongo_data import (
     load_era5_batch_cache,
     release_era5_api_budget as release_shared_era5_api_budget,
     reserve_era5_api_budget,
@@ -19,12 +19,12 @@ from mongo_data import (
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 NVE_REGION_FILE = PROJECT_ROOT / "data" / "NVE_shapefiles" / "NVE_Region.shp"
-REGION_CODES = ("RM", "RN", "RS", "RV", "RØ")
-# The assignment groups East as RS+RØ and North as RM+RN.
+REGION_CODES = ("RM", "RN", "RS", "RV", "RÃ˜")
+# The assignment groups East as RS+RÃ˜ and North as RM+RN.
 REGION_IDENTIFIER_MAP = {
-    "NO1": ("RS", "RØ"),
+    "NO1": ("RS", "RÃ˜"),
     "NO2": ("RS",),
     "NO3": ("RM",),
     "NO4": ("RM", "RN"),

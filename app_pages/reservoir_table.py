@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from nve_data import AREA_TYPE_LABELS, load_reservoir_data
+from utils.nve_data import AREA_TYPE_LABELS, load_reservoir_data
 
 
 def load_data():

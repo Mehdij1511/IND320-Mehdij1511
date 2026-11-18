@@ -1,13 +1,13 @@
 import streamlit as st
 import requests
 
-from mongo_data import era5_mongodb_cache_configured
-from part3_analysis import plot_precipitation_outliers, plot_temperature_anomalies
-from part3_streamlit import load_weather_for_area, select_electricity_area
-from part3_data import Era5ApiBudgetExceeded
+from utils.mongo_data import era5_mongodb_cache_configured
+from utils.part3_analysis import plot_precipitation_outliers, plot_temperature_anomalies
+from utils.part3_streamlit import load_weather_for_area, select_electricity_area
+from utils.part3_data import Era5ApiBudgetExceeded
 
 
-st.title("Part 3 - Weather outliers")
+st.title("Open-Meteo weather outliers")
 st.write(
     "Download hourly ERA5 precipitation and temperature for the selected "
     "Magasinstatistikk electricity area."
@@ -38,7 +38,6 @@ if not era5_mongodb_cache_configured():
 # Only contact the weather API after the user asks to load the data.
 if st.button(
     f"Download or load NO{area_number} weather data",
-    type="primary",
     key="part3_weather_download",
 ):
     try:

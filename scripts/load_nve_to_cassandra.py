@@ -1,5 +1,5 @@
-from cassandra_data import connect, initialize_schema, insert_reservoir_observation
-from nve_data import load_reservoir_data
+from utils.cassandra_data import connect, initialize_schema, insert_reservoir_observation
+from utils.nve_data import load_reservoir_data
 
 
 data = load_reservoir_data()

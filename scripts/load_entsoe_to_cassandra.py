@@ -2,8 +2,8 @@ from datetime import datetime, timedelta, timezone
 
 import requests
 
-from cassandra_data import connect, initialize_schema, insert_electricity_flow
-from entsoe_data import (
+from utils.cassandra_data import connect, initialize_schema, insert_electricity_flow
+from utils.entsoe_data import (
 	NORWEGIAN_DOMAINS,
 	PARTNER_DOMAINS,
 	fetch_physical_flow,

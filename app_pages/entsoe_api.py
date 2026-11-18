@@ -5,14 +5,14 @@ import plotly.express as px
 import requests
 import streamlit as st
 
-from entsoe_data import (
+from utils.entsoe_data import (
 	PARTNER_DOMAINS,
 	NORWEGIAN_DOMAINS,
 	fetch_physical_flow,
 )
 
 
-st.title("Part 2 - ENTSO-E API")
+st.title("ENTSO-E physical flows")
 st.write("Retrieve cross-border physical electricity flows involving Norway.")
 
 # These controls define the two bidding zones used in the API request.
@@ -29,7 +29,7 @@ norwegian_zone = st.selectbox(
 start_date = st.date_input("Start date", value=date(2024, 1, 1))
 end_date = st.date_input("End date", value=date(2024, 1, 7))
 
-if st.button("Load ENTSO-E data", type="primary"):
+if st.button("Load ENTSO-E data"):
 	if end_date <= start_date:
 		st.error("End date must be after start date.")
 		st.stop()

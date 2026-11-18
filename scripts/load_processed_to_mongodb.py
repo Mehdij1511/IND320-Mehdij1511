@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from mongo_data import connect_mongodb
+from utils.mongo_data import connect_mongodb
 
 
 INPUT_FILE = Path("data/processed/electricity_flows/monthly_flows.json")

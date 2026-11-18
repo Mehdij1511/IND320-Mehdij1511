@@ -1,10 +1,10 @@
 import streamlit as st
 
-from part3_analysis import plot_spectrogram, plot_stl_decomposition
-from part3_streamlit import reservoir_filling_series, select_electricity_area
+from utils.part3_analysis import plot_spectrogram, plot_stl_decomposition
+from utils.part3_streamlit import reservoir_filling_series, select_electricity_area
 
 
-st.title("Part 3 - Reservoir seasonality")
+st.title("Reservoir seasonality")
 st.write(
     "Explore the seasonal pattern in Magasinstatistikk filling levels using "
     "STL decomposition and a spectrogram."

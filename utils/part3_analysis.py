@@ -144,7 +144,7 @@ def plot_temperature_anomalies(
         label="LOF anomaly",
         zorder=3,
     )
-    axis.set(title="Hourly temperature anomalies (Local Outlier Factor)", ylabel="Temperature (°C)")
+    axis.set(title="Hourly temperature anomalies (Local Outlier Factor)", ylabel="Temperature (Â°C)")
     axis.legend()
     axis.grid(alpha=0.2)
     figure.tight_layout()
